@@ -71,9 +71,9 @@ mod util;
 
 pub use audio::Audio;
 pub use chat::Chat;
-pub use client::Client;
 pub use client::API_BASE;
 pub use client::ORGANIZATION_HEADER;
+pub use client::{Client, HeaderMap};
 pub use completion::Completions;
 pub use edit::Edits;
 pub use embedding::Embeddings;

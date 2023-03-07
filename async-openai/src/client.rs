@@ -1,7 +1,7 @@
 use std::pin::Pin;
 
 use futures::{stream::StreamExt, Stream};
-use reqwest::header::HeaderMap;
+pub use reqwest::header::HeaderMap;
 use reqwest_eventsource::{Event, EventSource, RequestBuilderExt};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -23,6 +23,7 @@ pub struct Client {
     api_base: String,
     org_id: String,
     backoff: backoff::ExponentialBackoff,
+    headers: HeaderMap,
 }
 
 /// Default v1 API base url
@@ -39,6 +40,7 @@ impl Default for Client {
             api_key: std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| "".to_string()),
             org_id: Default::default(),
             backoff: Default::default(),
+            headers: Default::default(),
         }
     }
 }
@@ -79,6 +81,12 @@ impl Client {
     /// Form submissions are not retried.
     pub fn with_backoff(mut self, backoff: backoff::ExponentialBackoff) -> Self {
         self.backoff = backoff;
+        self
+    }
+
+    /// Add custom headers to the request
+    pub fn with_headers(mut self, headers: HeaderMap) -> Self {
+        self.headers = headers;
         self
     }
 
@@ -143,7 +151,7 @@ impl Client {
     }
 
     fn headers(&self) -> HeaderMap {
-        let mut headers = HeaderMap::new();
+        let mut headers = self.headers.clone();
         if !self.org_id.is_empty() {
             headers.insert(ORGANIZATION_HEADER, self.org_id.as_str().parse().unwrap());
         }

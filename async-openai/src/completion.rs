@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 use crate::{
     client::Client,
     error::OpenAIError,
@@ -11,6 +13,16 @@ pub struct Completions<'c> {
     client: &'c Client,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct NECreateCompletionResponse {
+    /// 返回结果状态，000000表示成功
+    pub status: String,
+    /// 返回结果描述
+    pub desc: Option<String>,
+    /// 返回数据详情
+    pub detail: Option<CreateCompletionResponse>,
+}
+
 impl<'c> Completions<'c> {
     pub fn new(client: &'c Client) -> Self {
         Self { client }
@@ -20,13 +32,13 @@ impl<'c> Completions<'c> {
     pub async fn create(
         &self,
         request: CreateCompletionRequest,
-    ) -> Result<CreateCompletionResponse, OpenAIError> {
+    ) -> Result<NECreateCompletionResponse, OpenAIError> {
         if request.stream.is_some() && request.stream.unwrap() {
             return Err(OpenAIError::InvalidArgument(
                 "When stream is true, use Completion::create_stream".into(),
             ));
         }
-        self.client.post("/completions", request).await
+        self.client.post("/api/v2/text/completion", request).await
     }
 
     /// Creates a completion request for the provided prompt and parameters
