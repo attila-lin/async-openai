@@ -2,9 +2,9 @@
 members = [
     "audio-transcribe",
     "audio-translate",
+    "azure-openai-service",
     "chat",
     "chat-stream",
-    "codex",
     "create-edit",
     "completions",
     "completions-stream",
