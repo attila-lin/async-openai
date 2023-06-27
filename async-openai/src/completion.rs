@@ -24,8 +24,8 @@ pub struct NECreateCompletionResponse {
     pub detail: Option<CreateCompletionResponse>,
 }
 
-impl<'c> Completions<'c> {
-    pub fn new(client: &'c Client) -> Self {
+impl<'c, C: Config> Completions<'c, C> {
+    pub fn new(client: &'c Client<C>) -> Self {
         Self { client }
     }
 

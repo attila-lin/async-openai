@@ -22,7 +22,6 @@ pub struct Client<C: Config> {
     http_client: reqwest::Client,
     config: C,
     backoff: backoff::ExponentialBackoff,
-    headers: HeaderMap,
 }
 
 impl Client<OpenAIConfig> {
@@ -32,7 +31,6 @@ impl Client<OpenAIConfig> {
             http_client: reqwest::Client::new(),
             config: OpenAIConfig::default(),
             backoff: Default::default(),
-            headers: Default::default(),
         }
     }
 }
@@ -60,20 +58,6 @@ impl<C: Config> Client<C> {
     pub fn with_backoff(mut self, backoff: backoff::ExponentialBackoff) -> Self {
         self.backoff = backoff;
         self
-    }
-
-    /// Add custom headers to the request
-    pub fn with_headers(mut self, headers: HeaderMap) -> Self {
-        self.headers = headers;
-        self
-    }
-
-    pub fn api_base(&self) -> &str {
-        &self.api_base
-    }
-
-    pub fn api_key(&self) -> &str {
-        &self.api_key
     }
 
     // API groups
@@ -126,14 +110,6 @@ impl<C: Config> Client<C> {
     /// To call [Audio] group related APIs using this client.
     pub fn audio(&self) -> Audio<C> {
         Audio::new(self)
-    }
-
-    fn headers(&self) -> HeaderMap {
-        let mut headers = self.headers.clone();
-        if !self.org_id.is_empty() {
-            headers.insert(ORGANIZATION_HEADER, self.org_id.as_str().parse().unwrap());
-        }
-        headers
     }
 
     /// Make a GET request to {path} and deserialize the response body
