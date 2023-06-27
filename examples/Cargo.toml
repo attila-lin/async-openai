@@ -13,6 +13,7 @@ members = [
     "create-image-edit",
     "create-image-variation",
     "embeddings",
+    "function-call",
     "models",
     "moderations",
     "rate-limit-completions",
