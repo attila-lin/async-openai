@@ -24,6 +24,8 @@ pub struct OpenAIConfig {
     api_base: String,
     api_key: String,
     org_id: String,
+    /// custom headers
+    headers: HeaderMap,
 }
 
 impl Default for OpenAIConfig {
@@ -32,6 +34,7 @@ impl Default for OpenAIConfig {
             api_base: OPENAI_API_BASE.to_string(),
             api_key: std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| "".to_string()),
             org_id: Default::default(),
+            headers: Default::default(),
         }
     }
 }
@@ -60,6 +63,13 @@ impl OpenAIConfig {
         self
     }
 
+    /// with custom header
+    pub fn with_headers(mut self, headers: HeaderMap) -> Self {
+        self.headers = headers;
+
+        self
+    }
+
     pub fn org_id(&self) -> &str {
         &self.org_id
     }
@@ -79,6 +89,8 @@ impl Config for OpenAIConfig {
             AUTHORIZATION,
             format!("Bearer {}", self.api_key).as_str().parse().unwrap(),
         );
+
+        headers.extend(self.headers.clone());
 
         headers
     }

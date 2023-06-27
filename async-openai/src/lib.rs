@@ -104,3 +104,5 @@ pub use fine_tune::FineTunes;
 pub use image::Images;
 pub use model::Models;
 pub use moderation::Moderations;
+
+pub use reqwest::header::HeaderMap;
